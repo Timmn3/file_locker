@@ -2,7 +2,7 @@ import telebot
 
 # Здесь используйте свой token, полученный от BotFather в Telegram
 TOKEN = 'TOKEN_FROM_BOTFATHER'
-CHAT_ID = '5635586329'  # id чата, куда будет отправляться сообщение
+CHAT_ID = 'your_chat_id'  # id чата, куда будет отправляться сообщение
 
 bot = telebot.TeleBot(TOKEN)
 
